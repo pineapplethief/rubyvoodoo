@@ -9,4 +9,6 @@ Rails.application.routes.draw do
   end
 
   root 'pages#home'
+
+  resources :articles, only: [:index, :show]
 end

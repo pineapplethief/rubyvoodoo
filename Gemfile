@@ -28,15 +28,18 @@ gem 'pry-rails'
 gem 'pundit'
 gem 'rack-cache'
 gem 'rack-canonical-host'
+gem 'redcarpet'
 gem 'redis', require: ['redis', 'redis/connection/hiredis']
 gem 'redis-rails'
 gem 'require_all'
 gem 'responders'
+gem 'rouge'
 gem 'seed_migration'
 gem 'show_data'
 gem 'simple_enum'
 gem 'simple_form'
 gem 'sidekiq'
+gem 'slim-rails'
 gem 'virtus'
 
 # Front-end gems

@@ -278,6 +278,7 @@ GEM
     rb-inotify (0.9.5)
       ffi (>= 0.5.0)
     rdoc (4.2.0)
+    redcarpet (3.3.3)
     redis (3.2.1)
     redis-actionpack (4.0.1)
       actionpack (~> 4)
@@ -301,6 +302,7 @@ GEM
     require_all (1.3.3)
     responders (2.1.0)
       railties (>= 4.2.0, < 5)
+    rouge (1.10.1)
     rspec-core (3.3.2)
       rspec-support (~> 3.3.0)
     rspec-expectations (3.3.1)
@@ -406,6 +408,15 @@ GEM
       json (~> 1.8)
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
+    slim (3.0.6)
+      temple (~> 0.7.3)
+      tilt (>= 1.3.3, < 2.1)
+    slim-rails (3.0.1)
+      actionmailer (>= 3.1, < 5.0)
+      actionpack (>= 3.1, < 5.0)
+      activesupport (>= 3.1, < 5.0)
+      railties (>= 3.1, < 5.0)
+      slim (~> 3.0)
     slop (3.6.0)
     spring (1.4.0)
     spring-commands-rspec (1.0.4)
@@ -416,6 +427,7 @@ GEM
       actionpack (>= 3.0)
       activesupport (>= 3.0)
       sprockets (>= 2.8, < 4.0)
+    temple (0.7.6)
     term-ansicolor (1.3.2)
       tins (~> 1.0)
     terminal-table (1.5.2)
@@ -486,11 +498,13 @@ DEPENDENCIES
   rails (~> 4.2)
   rb-fsevent
   rb-inotify
+  redcarpet
   redis
   redis-rails
   remotipart (~> 1.2)
   require_all
   responders
+  rouge
   rspec-rails (~> 3.2)
   sassc-rails
   schema_plus
@@ -502,6 +516,7 @@ DEPENDENCIES
   simple_enum
   simple_form
   simplecov
+  slim-rails
   spring
   spring-commands-rspec
   timecop

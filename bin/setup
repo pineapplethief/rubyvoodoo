@@ -1,0 +1,123 @@
+#!/usr/bin/env ruby
+require 'pathname'
+require 'fileutils'
+begin
+  require 'highline'
+rescue LoadError
+  # If highline is missing, we'll gracefully omit ansi color output
+end
+
+def setup!
+  inside_app_root do
+    test 'ruby -v' => ruby_version
+
+    say_title 'Installing dependencies'
+    run  'gem install bundler --no-document --conservative'
+    run  'rbenv rehash' if rbenv_installed?
+    run  'bundle check || bundle install'
+    run  "rbenv rehash" if rbenv_installed?
+
+    say_title 'Copying sample files'
+    copy '.example.env'
+    copy '.example.rspec'
+
+    test_local_env_contains_required_keys
+
+    say_title 'Preparing database'
+    run  'bundle exec rake db:setup'
+
+    # run  'pre-commit install' if pre_commit_available?
+  end
+end
+
+def inside_app_root(&block)
+  app_root = Pathname.new File.expand_path('../../',  __FILE__)
+  Dir.chdir(app_root, &block)
+end
+
+def ruby_version
+  @ruby_version ||= begin
+    IO.read(".ruby-version").strip
+  end
+end
+
+def test(options)
+  command, output = options.first
+
+  say(:yellow, "test #{command}") do
+    unless `#{command}`.include?(output)
+      die("#{command} does not include #{output}")
+    end
+  end
+end
+
+def run(command)
+  say(:light_blue, "run #{command}") do
+    shell = "#{command} > /dev/null"
+    with_clean_bundler_env do
+      system(shell) or die("#{command} exited with non-zero status}")
+    end
+  end
+end
+
+def with_clean_bundler_env(&block)
+  return block.call unless defined?(Bundler)
+  Bundler.with_clean_env(&block)
+end
+
+def rbenv_installed?
+  @rbenv_installed = `which rbenv`.length > 0 if @rbenv_installed.nil?
+  @rbenv_installed
+end
+
+def pre_commit_available?
+  @pre_commit_available = `which pre-commit`.length > 0 if @pre_commit_available.nil?
+  @pre_commit_available
+end
+
+def copy(example_path)
+  copy_path = example_path.sub(/\.?example/, '')
+  return if File.exist?(copy_path)
+
+  say(:magenta, "copy #{example_path} → #{copy_path}") do
+    FileUtils.cp(example_path, copy_path)
+  end
+end
+
+def test_local_env_contains_required_keys
+  keys = ->(file) { IO.readlines(file).map { |line| line[/^([^#\s][^=\s]*)/, 1] }.compact }
+
+  say(:light_yellow, 'test .env contents') do
+    missing = keys['.example.env'] - keys['.env']
+    if missing.any?
+      die("Your .env file is missing #{missing.join(', ')}")
+    end
+  end
+end
+
+def say(color, message, output_stream = $stdout, &block)
+  if defined?(HighLine::String)
+    message.sub!(/^(\S*)/) { HighLine::String.new($1).public_send(color) }
+  end
+
+  if block_given?
+    output_stream.print("#{message}… ")
+    yield
+    say(:light_green, "✔︎")
+  else
+    output_stream.puts(message)
+  end
+end
+
+def say_title(title)
+  puts
+  puts "== #{title} =="
+end
+
+def die(message)
+  puts
+  say(:light_red, "FAIL #{message}", $stderr)
+  exit 1
+end
+
+setup!

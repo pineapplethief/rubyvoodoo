@@ -1,0 +1,2 @@
+nginx: bin/nginx -c /home/vagrant/rubyvoodoo/config/nginx.conf
+puma: bundle exec puma
